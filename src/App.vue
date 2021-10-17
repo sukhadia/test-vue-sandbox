@@ -1,27 +1,46 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" width="25%">
-    <HelloWorld msg="Hello Vue in CodeSandbox!"/>
+    <p v-if="isLoading">Loading...</p>
+    <Messages v-if="!isLoading && !error" :workflows="workflows" />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import Messages from "./components/Messages.vue";
+import { fetchMessages } from "./data.js";
 
 export default {
   name: "App",
   components: {
-    HelloWorld
-  }
+    Messages,
+  },
+  data() {
+    return {
+      isLoading: false,
+      error: null,
+      workflows: [],
+    };
+  },
+  methods: {
+    async fetchMessagesProxy() {
+      this.isLoading = true;
+      const data = await fetchMessages();
+      this.workflows = data.data.workflows;
+      this.isLoading = false;
+    },
+  },
+  mounted() {
+    this.fetchMessagesProxy();
+  },
 };
 </script>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   color: #2c3e50;
   margin-top: 60px;
 }
